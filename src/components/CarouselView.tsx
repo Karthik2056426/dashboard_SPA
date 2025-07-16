@@ -100,38 +100,16 @@ const CarouselView = ({ onBack }: CarouselViewProps) => {
           <div className="w-full lg:w-1/5 flex-shrink-0 h-full min-h-0">
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 h-full flex flex-col">
               <CardContent className="p-2 lg:p-2 flex-1 flex flex-col min-h-0">
-                <h2 className="text-xl font-bold text-white mb-4 text-center">Live House Standings</h2>
-                <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-auto scrollbar-hide">
-                  {sortedHouses.map((house, index) => {
-                    let houseClasses = '';
-                    switch (house.name) {
-                      case 'Tagore':
-                        houseClasses = 'bg-blue-100 text-blue-800 border-blue-200';
-                        break;
-                      case 'Aloysius':
-                        houseClasses = 'bg-red-100 text-red-800 border-red-200';
-                        break;
-                      case 'Gandhi':
-                        houseClasses = 'bg-yellow-100 text-yellow-800 border-yellow-200';
-                        break;
-                      case 'Delany':
-                        houseClasses = 'bg-green-100 text-green-800 border-green-200';
-                        break;
-                      default:
-                        houseClasses = 'bg-white text-gray-800 border-gray-200';
-                    }
-                    return (
-                      <div 
-                        key={house.name}
-                        className={`backdrop-blur-sm rounded-lg p-2 text-center border ${houseClasses}`}
-                      >
-                        <div className="flex items-center justify-center mb-1">
-                          {getRankIcon(index)}
-                          <span className="font-semibold ml-2">#{index + 1}</span>
-                        </div>
-                        <h3 className="text-xl font-bold mb-1">{house.name}</h3>
-                        <div className="text-3xl font-bold">{house.score}</div>
-                        <p className="text-sm">points</p>
+                <h2 className="text-2xl font-bold text-white mb-2 text-center">Live House Standings</h2>
+                <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-auto">
+                  {sortedHouses.map((house, index) => (
+                    <div 
+                      key={house.name}
+                      className="bg-white/20 backdrop-blur-sm rounded-lg p-2 text-center border border-white/30"
+                    >
+                      <div className="flex items-center justify-center mb-1">
+                        {getRankIcon(index)}
+                        <span className="text-white font-semibold ml-2">#{index + 1}</span>
                       </div>
                     );
                   })}
