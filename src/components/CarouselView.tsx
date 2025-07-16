@@ -100,7 +100,7 @@ const CarouselView = ({ onBack }: CarouselViewProps) => {
           <div className="w-full lg:w-1/5 flex-shrink-0 h-full min-h-0">
             <Card className="bg-white/10 backdrop-blur-sm border-white/20 h-full flex flex-col">
               <CardContent className="p-2 lg:p-2 flex-1 flex flex-col min-h-0">
-                <h2 className="text-2xl font-bold text-white mb-4 text-center">Live House Standings</h2>
+                <h2 className="text-2xl font-bold text-white mb-3 p-1 text-center">Live House Standings</h2>
                 <div className="flex flex-col gap-2 flex-1 min-h-0 overflow-auto">
                   {sortedHouses.map((house, index) => (
                     <div 
