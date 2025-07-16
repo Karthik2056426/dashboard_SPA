@@ -31,6 +31,16 @@ interface EventResult {
   winners: Winner[];
 }
 
+const getHouseColor = (house: string) => {
+  const colors = {
+    'Delany': 'bg-green-100 text-green-800 border-green-200',
+    'Gandhi': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'Tagore': 'bg-blue-100 text-blue-800 border-blue-200',
+    'Aloysius': 'bg-red-100 text-red-800 border-red-200'
+  };
+  return colors[house as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+};
+
 const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
   const { toast } = useToast();
   const { events, addEvent, updateEvent, deleteEvent } = useEventContext();
@@ -603,7 +613,7 @@ const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
                         <TableCell>
                           <div className="flex flex-wrap gap-1">
                             {event.winners.map((winner, index) => (
-                              <Badge key={index} variant="outline" className="text-xs">
+                              <Badge key={index} variant="outline" className={`text-xs ${getHouseColor(winner.house)}`}>
                                 {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'} {winner.house}
                               </Badge>
                             ))}

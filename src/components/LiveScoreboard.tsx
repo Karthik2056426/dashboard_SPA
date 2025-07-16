@@ -65,33 +65,50 @@ const LiveScoreboard = () => {
       </CardHeader>
       <CardContent className="p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {sortedHouses.map((house, index) => (
-            <div 
-              key={house.name}
-              className={`relative p-6 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${getRankColor(index)}`}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  {getRankIcon(index)}
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800">{house.name}</h3>
-                    <p className="text-sm text-gray-500">#{index + 1} Position</p>
+          {sortedHouses.map((house, index) => {
+            let houseClasses = '';
+            switch (house.name) {
+              case 'Tagore':
+                houseClasses = 'bg-blue-100 text-blue-800 border-blue-200';
+                break;
+              case 'Aloysius':
+                houseClasses = 'bg-red-100 text-red-800 border-red-200';
+                break;
+              case 'Gandhi':
+                houseClasses = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                break;
+              case 'Delany':
+                houseClasses = 'bg-green-100 text-green-800 border-green-200';
+                break;
+              default:
+                houseClasses = 'bg-white text-gray-800 border-gray-200';
+            }
+            return (
+              <div 
+                key={house.name}
+                className={`relative p-6 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${getRankColor(index)} ${houseClasses}`}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    {getRankIcon(index)}
+                    <div>
+                      <h3 className="text-xl font-bold">{house.name}</h3>
+                      <p className="text-sm">#{index + 1} Position</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-bold">{house.score}</div>
+                    <div className="text-sm">points</div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-3xl font-bold text-gray-900">{house.score}</div>
-                  <div className="text-sm text-gray-500">points</div>
-                </div>
+                {index === 0 && (
+                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                    LEADING
+                  </div>
+                )}
               </div>
-              
-              
-              {index === 0 && (
-                <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                  LEADING
-                </div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>
