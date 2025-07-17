@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { ArrowLeft, Plus, Edit, Trash2, Save, Calendar, Trophy, Users, Settings, Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useEventContext, Event } from './EventContext';
+import { uploadImageToCloudinary } from '@/lib/cloudinary';
 
 interface AdminDashboardProps {
   onBack: () => void;
@@ -477,7 +478,7 @@ const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
                                 <Input
                                   type="file"
                                   accept="image/*,.webp"
-                                  onChange={e => {
+                                  onChange={async (e) => {
                                     const file = e.target.files?.[0];
                                     if (file) {
                                       // Validate file type
@@ -501,20 +502,18 @@ const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
                                         return;
                                       }
                                       
-                                      const reader = new FileReader();
-                                      reader.onload = ev => {
+                                      try {
+                                        const cloudinaryUrl = await uploadImageToCloudinary(file);
                                         const updated = [...resultWinners];
-                                        updated[index].photo = ev.target?.result as string;
+                                        updated[index].photo = cloudinaryUrl;
                                         setResultWinners(updated);
-                                      };
-                                      reader.onerror = () => {
+                                      } catch (error) {
                                         toast({
-                                          title: "Error reading file",
-                                          description: "Failed to read the uploaded image. Please try again.",
+                                          title: "Upload Failed",
+                                          description: "Failed to upload image to Cloudinary. Please try again.",
                                           variant: "destructive",
                                         });
-                                      };
-                                      reader.readAsDataURL(file);
+                                      }
                                     }
                                   }}
                                   className="hidden"
@@ -681,7 +680,79 @@ const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
                             {/* Photo Upload Section */}
                             <div>
                               <Label>Winner Photo</Label>
-                              {/* Removed photo preview and file upload logic */}
+                              {winner.photo ? (
+                                <div className="relative">
+                                  <img 
+                                    src={winner.photo} 
+                                    alt="Winner preview" 
+                                    className="w-full h-32 object-cover rounded-lg border"
+                                    onError={(e) => {
+                                      // Fallback to placeholder if image fails to load
+                                      const target = e.target as HTMLImageElement;
+                                      if (target.src !== '/placeholder.svg') {
+                                        target.src = '/placeholder.svg';
+                                      }
+                                    }}
+                                  />
+                                  <Button type="button" onClick={() => {
+                                    const updatedWinners = [...editingResult.winners];
+                                    updatedWinners[index].photo = undefined;
+                                    setEditingResult({ ...editingResult, winners: updatedWinners });
+                                  }} className="absolute top-2 right-2 h-6 w-6 p-0 bg-red-500 hover:bg-red-600">
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                  <Upload className="h-8 w-8 mx-auto text-gray-400 mb-2" />
+                                  <Input
+                                    type="file"
+                                    accept="image/*,.webp"
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        // Validate file type
+                                        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                                        if (!validTypes.includes(file.type)) {
+                                          toast({
+                                            title: "Invalid file type",
+                                            description: "Please upload a valid image file (JPEG, PNG, GIF, or WebP).",
+                                            variant: "destructive",
+                                          });
+                                          return;
+                                        }
+                                        
+                                        // Validate file size (max 5MB)
+                                        if (file.size > 5 * 1024 * 1024) {
+                                          toast({
+                                            title: "File too large",
+                                            description: "Please upload an image smaller than 5MB.",
+                                            variant: "destructive",
+                                          });
+                                          return;
+                                        }
+                                        
+                                        try {
+                                          const cloudinaryUrl = await uploadImageToCloudinary(file);
+                                          const updatedWinners = [...editingResult.winners];
+                                          updatedWinners[index].photo = cloudinaryUrl;
+                                          setEditingResult({ ...editingResult, winners: updatedWinners });
+                                        } catch (error) {
+                                          toast({
+                                            title: "Upload Failed",
+                                            description: "Failed to upload image to Cloudinary. Please try again.",
+                                            variant: "destructive",
+                                          });
+                                        }
+                                      }
+                                    }}
+                                    className="hidden"
+                                    id={`edit-photo-${index}`} />
+                                  <Label htmlFor={`edit-photo-${index}`} className="cursor-pointer text-blue-600 hover:text-blue-700">
+                                    Click to upload photo (JPEG, PNG, GIF, WebP - max 5MB)
+                                  </Label>
+                                </div>
+                              )}
                             </div>
 
                             <div>
