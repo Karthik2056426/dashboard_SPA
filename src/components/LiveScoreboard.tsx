@@ -34,20 +34,23 @@ const LiveScoreboard = () => {
   const maxScore = Math.max(...houses.map(h => h.score), 1);
   const sortedHouses = [...houses].sort((a, b) => b.score - a.score);
 
-  // Dense ranking logic
+  // Dense ranking logic (no skips)
   function getDenseRanks(sortedHouses: { score: number }[]) {
-    let ranks = [];
-    let lastScore = null;
-    let rank = 1;
+    let ranks: number[] = [];
+    let lastScore: number | null = null;
+    let rank = 0;
+  
     for (let i = 0; i < sortedHouses.length; i++) {
       if (sortedHouses[i].score !== lastScore) {
-        rank = ranks.length + 1;
+        rank++; // Increment rank only when score changes
       }
       ranks.push(rank);
       lastScore = sortedHouses[i].score;
     }
+  
     return ranks;
   }
+  
   const ranks = getDenseRanks(sortedHouses);
 
   const getRankIcon = (index: number) => {
