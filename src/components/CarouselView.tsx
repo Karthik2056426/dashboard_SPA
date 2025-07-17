@@ -27,6 +27,22 @@ const CarouselView = ({ onBack }: CarouselViewProps) => {
   });
   const houses = Object.values(houseMap);
   const sortedHouses = [...houses].sort((a, b) => b.score - a.score);
+
+  // Dense ranking logic
+  function getDenseRanks(sortedHouses: { score: number }[]) {
+    let ranks = [];
+    let lastScore = null;
+    let rank = 1;
+    for (let i = 0; i < sortedHouses.length; i++) {
+      if (sortedHouses[i].score !== lastScore) {
+        rank = ranks.length + 1;
+      }
+      ranks.push(rank);
+      lastScore = sortedHouses[i].score;
+    }
+    return ranks;
+  }
+  const ranks = getDenseRanks(sortedHouses);
   // Use events from context for the event carousel
   const [api, setApi] = useState<CarouselApi>();
 
@@ -127,7 +143,7 @@ const CarouselView = ({ onBack }: CarouselViewProps) => {
                       >
                         <div className="flex items-center justify-center mb-1">
                           {getRankIcon(index)}
-                          <span className="font-semibold ml-2">#{index + 1}</span>
+                          <span className="font-semibold ml-2">#{ranks[index]}</span>
                         </div>
                         <h3 className="text-xl font-bold mb-1">{house.name}</h3>
                         <div className="text-3xl font-bold">{house.score}</div>

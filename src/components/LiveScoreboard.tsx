@@ -34,6 +34,22 @@ const LiveScoreboard = () => {
   const maxScore = Math.max(...houses.map(h => h.score), 1);
   const sortedHouses = [...houses].sort((a, b) => b.score - a.score);
 
+  // Dense ranking logic
+  function getDenseRanks(sortedHouses: { score: number }[]) {
+    let ranks = [];
+    let lastScore = null;
+    let rank = 1;
+    for (let i = 0; i < sortedHouses.length; i++) {
+      if (sortedHouses[i].score !== lastScore) {
+        rank = ranks.length + 1;
+      }
+      ranks.push(rank);
+      lastScore = sortedHouses[i].score;
+    }
+    return ranks;
+  }
+  const ranks = getDenseRanks(sortedHouses);
+
   const getRankIcon = (index: number) => {
     switch (index) {
       case 0: return <Crown className="h-6 w-6 text-yellow-500" />;
@@ -84,16 +100,16 @@ const LiveScoreboard = () => {
                 houseClasses = 'bg-white text-gray-800 border-gray-200';
             }
             return (
-              <div 
-                key={house.name}
+            <div 
+              key={house.name}
                 className={`relative p-6 rounded-xl border-2 transition-all duration-300 hover:scale-105 ${getRankColor(index)} ${houseClasses}`}
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    {getRankIcon(index)}
-                    <div>
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  {getRankIcon(index)}
+                  <div>
                       <h3 className="text-xl font-bold">{house.name}</h3>
-                      <p className="text-sm">#{index + 1} Position</p>
+                      <p className="text-sm">#{ranks[index]} Position</p>
                     </div>
                   </div>
                   <div className="text-right">
@@ -101,12 +117,12 @@ const LiveScoreboard = () => {
                     <div className="text-sm">points</div>
                   </div>
                 </div>
-                {index === 0 && (
-                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
-                    LEADING
-                  </div>
-                )}
-              </div>
+              {index === 0 && (
+                <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-bold animate-pulse">
+                  LEADING
+                </div>
+              )}
+            </div>
             );
           })}
         </div>
