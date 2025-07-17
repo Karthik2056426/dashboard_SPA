@@ -6,31 +6,49 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Lock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 interface AdminLoginProps {
   onLogin: () => void;
 }
 
+const ADMIN_EMAIL = "admin@spa.com";
+
 const AdminLogin = ({ onLogin }: AdminLoginProps) => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (username === 'admin' && password === 'patricks9520') {
+    setLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      if (user.email !== ADMIN_EMAIL) {
+        await auth.signOut();
+        toast({
+          title: "Access Denied",
+          description: "You are not authorized to access the admin dashboard.",
+          variant: "destructive",
+        });
+        return;
+      }
       onLogin();
       toast({
-        title: "Login Successful",
-        description: "Welcome to the admin dashboard!",
+        title: 'Login Successful',
+        description: 'Welcome to the admin dashboard!',
       });
-    } else {
+    } catch (err: any) {
       toast({
-        title: "Login Failed",
-        description: "Invalid username or password. Please try again.",
-        variant: "destructive",
+        title: 'Login Failed',
+        description: err.message || 'Invalid credentials. Please try again.',
+        variant: 'destructive',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,15 +67,15 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <div className="relative">
                 <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                 <Input
-                  id="username"
-                  type="text"
-                  placeholder="Enter username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  id="email"
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required
                 />
@@ -78,12 +96,12 @@ const AdminLogin = ({ onLogin }: AdminLoginProps) => {
                 />
               </div>
             </div>
-            <Button type="submit" className="w-full">
-              Login
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? 'Logging in...' : 'Login'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-gray-600">
-            <p>Please enter the credentials provided</p>
+            <p>Please enter your admin email and password</p>
           </div>
         </CardContent>
       </Card>
