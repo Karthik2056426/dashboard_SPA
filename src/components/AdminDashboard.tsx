@@ -250,6 +250,11 @@ const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
     setResultWinners(resultWinners.filter((_, i) => i !== index));
   };
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const filteredEvents = events.filter(event =>
+    event.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -421,16 +426,40 @@ const AdminDashboard = ({ onBack }: AdminDashboardProps) => {
               <CardContent className="space-y-6">
                 <div>
                   <Label>Select Event</Label>
-                  <Select value={selectedEventId} onValueChange={setSelectedEventId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose an event" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {events.map(event => (
-                        <SelectItem key={event.id} value={event.id}>{event.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="relative w-full max-w-xs">
+                    <Input
+                      placeholder="Type to search events..."
+                      value={searchTerm}
+                      onChange={e => setSearchTerm(e.target.value)}
+                      className="w-full pr-10"
+                    />
+                    {searchTerm && (
+                      <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        onClick={() => setSearchTerm('')}
+                        aria-label="Clear search"
+                      >
+                        ×
+                      </button>
+                    )}
+                    {searchTerm && filteredEvents.length > 0 && (
+                      <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded shadow-lg max-h-60 overflow-auto">
+                        {filteredEvents.map(event => (
+                          <div
+                            key={event.id}
+                            className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                            onClick={() => {
+                              setSelectedEventId(event.id);
+                              setSearchTerm('');
+                            }}
+                          >
+                            {event.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {selectedEvent && (
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
