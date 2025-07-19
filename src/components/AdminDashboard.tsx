@@ -35,7 +35,7 @@ interface EventResult {
 const getHouseColor = (house: string) => {
   const colors = {
     'Delany': 'bg-green-100 text-green-800 border-green-200',
-    'Gandhi': 'bg-yellow-100 text-yellow-800 border-yellow-200',
+    'Gandhi': 'bg-yellow-100 text-white border-yellow-200',
     'Tagore': 'bg-blue-100 text-blue-800 border-blue-200',
     'Aloysius': 'bg-red-100 text-red-800 border-red-200'
   };

@@ -131,7 +131,7 @@ const CarouselView = ({ onBack }: CarouselViewProps) => {
                         houseClasses = 'bg-[#ed6258] text-white border-red-200';
                         break;
                       case 'Gandhi':
-                        houseClasses = 'bg-[#ffde59] text-white border-yellow-200';
+                        houseClasses = 'bg-[#f7d136] text-white border-yellow-200';
                         break;
                       case 'Delany':
                         houseClasses = 'bg-[#00bf63] text-white border-green-200';
